@@ -2,6 +2,8 @@ package comepqtesting.wix.socot.epqtesting;
 
 import android.net.Uri;
 
+import java.util.Objects;
+
 /**
  * Created by Scott on 3/31/2016.
  */
@@ -20,7 +22,9 @@ public class Contact {
         _imageURI = imageURI;
     }
 
-    public int getId(){ return  _id;}
+    public int getId() {
+        return _id;
+    }
 
     public String getName() {
         return _name;
@@ -36,9 +40,9 @@ public class Contact {
 
     public String getAddress() {
         return _address;
-
     }
-    public Uri get_imageURI() { return _imageURI; }
 
-
+    public Uri getImageURI() {
+        return _imageURI;
+    }
 }

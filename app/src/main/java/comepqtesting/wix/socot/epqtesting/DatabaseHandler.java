@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Scott on 4/4/2016.
+ * Created by Scott on 3/31/2016.
  */
 public class DatabaseHandler extends SQLiteOpenHelper {
 
@@ -32,7 +32,7 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + TABLE_CONTACTS + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + KEY_NAME + " TEXT," + KEY_PHONE + " TEXT," + KEY_EMAIL + " TEXT," + KEY_ADDRESS + " TEXT," + KEY_ADDRESS + " TEXT" + KEY_IMAGEURI + "TEXT)");
+        db.execSQL("CREATE TABLE " + TABLE_CONTACTS + "(" + KEY_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," + KEY_NAME + " TEXT," + KEY_PHONE + " TEXT," + KEY_EMAIL + " TEXT," + KEY_ADDRESS + " TEXT," + KEY_IMAGEURI + " TEXT)");
     }
 
     @Override
@@ -51,16 +51,16 @@ public class DatabaseHandler extends SQLiteOpenHelper {
         values.put(KEY_PHONE, contact.getPhone());
         values.put(KEY_EMAIL, contact.getEmail());
         values.put(KEY_ADDRESS, contact.getAddress());
-        values.put(KEY_IMAGEURI, contact.get_imageURI().toString());
+        values.put(KEY_IMAGEURI, contact.getImageURI().toString());
 
         db.insert(TABLE_CONTACTS, null, values);
         db.close();
-
     }
 
     public Contact getContact(int id) {
         SQLiteDatabase db = getReadableDatabase();
-        Cursor cursor = db.query(TABLE_CONTACTS, new String[]{KEY_ID, KEY_NAME, KEY_PHONE, KEY_EMAIL, KEY_ADDRESS, KEY_IMAGEURI }, KEY_ID + "=?", new String[]{String.valueOf(id)}, null, null, null, null);
+
+        Cursor cursor = db.query(TABLE_CONTACTS, new String[] { KEY_ID, KEY_NAME, KEY_PHONE, KEY_EMAIL, KEY_ADDRESS, KEY_IMAGEURI }, KEY_ID + "=?", new String[] { String.valueOf(id) }, null, null, null, null );
 
         if (cursor != null)
             cursor.moveToFirst();
@@ -73,52 +73,51 @@ public class DatabaseHandler extends SQLiteOpenHelper {
 
     public void deleteContact(Contact contact) {
         SQLiteDatabase db = getWritableDatabase();
-        db.delete(TABLE_CONTACTS, KEY_ID + "=?", new String[]{String.valueOf(contact.getId()) });
+        db.delete(TABLE_CONTACTS, KEY_ID + "=?", new String[] { String.valueOf(contact.getId()) });
         db.close();
     }
 
     public int getContactsCount() {
         SQLiteDatabase db = getReadableDatabase();
-        // * = All
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_CONTACTS, null);
         int count = cursor.getCount();
         db.close();
         cursor.close();
 
-        return cursor.getCount();
-
+        return count;
     }
 
     public int updateContact(Contact contact) {
         SQLiteDatabase db = getWritableDatabase();
 
         ContentValues values = new ContentValues();
+
         values.put(KEY_NAME, contact.getName());
         values.put(KEY_PHONE, contact.getPhone());
         values.put(KEY_EMAIL, contact.getEmail());
         values.put(KEY_ADDRESS, contact.getAddress());
-        values.put(KEY_IMAGEURI, contact.get_imageURI().toString());
+        values.put(KEY_IMAGEURI, contact.getImageURI().toString());
 
-        return db.update(TABLE_CONTACTS, values, KEY_ID + "=?", new String[]{String.valueOf(contact.getId()) });
+        int rowsAffected = db.update(TABLE_CONTACTS, values, KEY_ID + "=?", new String[] { String.valueOf(contact.getId()) });
+        db.close();
+
+        return rowsAffected;
     }
 
     public List<Contact> getAllContacts() {
         List<Contact> contacts = new ArrayList<Contact>();
+
         SQLiteDatabase db = getWritableDatabase();
-        // * = All
         Cursor cursor = db.rawQuery("SELECT * FROM " + TABLE_CONTACTS, null);
 
         if (cursor.moveToFirst()) {
             do {
-                Contact contact = new Contact(Integer.parseInt(cursor.getString(0)), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), Uri.parse(cursor.getString(5)));
-                contacts.add(contact);
+                contacts.add(new Contact(Integer.parseInt(cursor.getString(0)), cursor.getString(1), cursor.getString(2), cursor.getString(3), cursor.getString(4), Uri.parse(cursor.getString(5))));
             }
             while (cursor.moveToNext());
         }
+        cursor.close();
+        db.close();
         return contacts;
-
-
-        }
-
     }
-
+}

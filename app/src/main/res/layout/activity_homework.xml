@@ -42,8 +42,8 @@
                         android:textColor="#ffff" />
 
                     <ListView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
                         android:id="@+id/listView"
                         android:layout_gravity="center_horizontal" />
                 </LinearLayout>
@@ -71,7 +71,7 @@
                         android:ems="10"
                         android:id="@+id/txtName"
                         android:layout_marginTop="15dp"
-                        android:hint="Subject Name" />
+                        android:hint="Task Name" />
 
                     <EditText
                         android:layout_width="fill_parent"
@@ -80,7 +80,7 @@
                         android:ems="10"
                         android:id="@+id/txtPhone"
                         android:layout_gravity="center_horizontal"
-                        android:hint="Task Name"
+                        android:hint="Subject Name"
                         android:layout_marginTop="20dp" />
 
                     <EditText
@@ -113,8 +113,8 @@
                         android:enabled="false" />
 
                     <ImageView
-                        android:layout_width="100dp"
-                        android:layout_height="100dp"
+                        android:layout_width="75dp"
+                        android:layout_height="75dp"
                         android:id="@+id/imgViewContactImage"
                         android:layout_gravity="center_horizontal"
                         android:layout_marginTop="10dp"

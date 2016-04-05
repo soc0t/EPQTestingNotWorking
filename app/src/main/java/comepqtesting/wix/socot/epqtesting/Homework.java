@@ -6,10 +6,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -23,12 +25,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Homework extends AppCompatActivity {
+
+    private static final int EDIT = 0, DELETE =1;
     EditText nameTxt, phoneTxt, emailTxt, addressTxt;
     ImageView contactImageImgView;
     List<Contact> Contacts = new ArrayList<Contact>();
     ListView contactListView;
     Uri imageUri = Uri.parse("android.resource://wix.socot.epqtesting/drawable/notification.icon.png");
     DatabaseHandler dbHandler;
+    int longClickedItemIndex;
+    ArrayAdapter<Contact> contactAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +48,16 @@ public class Homework extends AppCompatActivity {
         contactListView = (ListView) findViewById(R.id.listView);
         contactImageImgView = (ImageView) findViewById(R.id.imgViewContactImage);
         dbHandler = new DatabaseHandler(getApplicationContext());
+
+        registerForContextMenu(contactListView);
+
+        contactListView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                longClickedItemIndex = position;
+                return false;
+            }
+        });
 
 
         TabHost tabHost = (TabHost) findViewById(R.id.tabHost);
@@ -65,10 +81,15 @@ public class Homework extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Contact contact = new Contact(dbHandler.getContactsCount(), String.valueOf(nameTxt.getText()), String.valueOf(phoneTxt.getText()), String.valueOf(emailTxt.getText()), String.valueOf(addressTxt.getText()), imageUri);
-                dbHandler.createContact(contact);
-                Contacts.add(contact);
-                populateList();
-                Toast.makeText(getApplicationContext(), nameTxt.getText().toString() + " Homework task has been set!", Toast.LENGTH_SHORT).show();
+                if (!contactExists(contact)) {
+                    dbHandler.createContact(contact);
+                    Contacts.add(contact);
+                    contactAdapter.notifyDataSetChanged();
+                    Toast.makeText(getApplicationContext(), String.valueOf(nameTxt.getText()) + " Homework task has been set!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                Toast.makeText((getApplicationContext()), String.valueOf(nameTxt.getText()) + " already exists. Please use a different homework name.", Toast.LENGTH_SHORT).show();
+
             }
         });
 
@@ -80,8 +101,8 @@ public class Homework extends AppCompatActivity {
             }
 
             @Override
-            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
-                addBtn.setEnabled(!nameTxt.getText().toString().trim().isEmpty());
+            public void onTextChanged(CharSequence charSequence, int i, int i2, int i3) {
+                addBtn.setEnabled(String.valueOf(nameTxt.getText()).trim().length() > 0);
 
             }
 
@@ -101,30 +122,61 @@ public class Homework extends AppCompatActivity {
             }
 
         });
-        List<Contact> addableContacts = dbHandler.getAllContacts();
-        int contactCount = dbHandler.getContactsCount();
 
-        for (int i = 0; i < contactCount; i++){
-            Contacts.add(addableContacts.get(i));
+        if (dbHandler.getContactsCount() !=0)
+        Contacts.addAll(dbHandler.getAllContacts());
 
+         populateList();
+    }
+
+    public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
+        super.onCreateContextMenu(menu, view, menuInfo);
+
+        menu.setHeaderIcon(R.drawable.edit_icon);
+        menu.setHeaderTitle("Homework Options");
+        menu.add(Menu.NONE, EDIT, menu.NONE, "Edit Homework");
+        menu.add(Menu.NONE, DELETE, menu.NONE,"Delete Homework");
+
+    }
+
+    public boolean onContextItemSelected (MenuItem item) {
+        switch (item.getItemId()) {
+            case EDIT:
+                //TODO:Implement editing a homework
+                break;
+            case DELETE:
+                dbHandler.deleteContact(Contacts.get(longClickedItemIndex));
+                Contacts.remove(longClickedItemIndex);
+                contactAdapter.notifyDataSetChanged();
+                break;
         }
 
-        if (!addableContacts.isEmpty())
-            populateList();
+        return super.onContextItemSelected(item);
+    }
+
+    private boolean contactExists(Contact contact) {
+        String name = contact.getName();
+        int contactCount = Contacts.size();
+
+        for (int i = 0; i < contactCount; i++) {
+            if (name.compareToIgnoreCase(Contacts.get(i).getName()) == 0)
+                return true;
+        }
+        return false;
     }
 
     public void onActivityResult(int reqCode, int resCode, Intent data) {
         if (resCode == RESULT_OK) {
             if (reqCode == 1) {
-                imageUri = (Uri) data.getData();
+                imageUri = data.getData();
                 contactImageImgView.setImageURI(data.getData());
             }
         }
     }
 
         private void populateList() {
-        ArrayAdapter<Contact> adapter = new ContactListAdapter();
-        contactListView.setAdapter(adapter);
+        contactAdapter = new ContactListAdapter();
+        contactListView.setAdapter(contactAdapter);
     }
 
 
@@ -152,7 +204,7 @@ public class Homework extends AppCompatActivity {
             TextView address = (TextView) view.findViewById(R.id.cAddress);
             address.setText(currentContact.getAddress());
             ImageView ivContactImage = (ImageView) view.findViewById(R.id.ivContactImage);
-            ivContactImage.setImageURI (currentContact.get_imageURI());
+            ivContactImage.setImageURI (currentContact.getImageURI());
 
 
             return view;
