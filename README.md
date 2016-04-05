@@ -1,6 +1,8 @@
 # EPQTestingNotWorking
 
 This is the logcat error I get when I press button to navigate to 'activity_timetable.xml' (the activity I want to have the timetable HTML thing).
+
+
 04-05 22:24:59.525  18286-18300/comepqtesting.wix.socot.epqtesting E/Surface﹕ getSlotFromBufferLocked: unknown buffer: 0xaaad27a0
 04-05 22:25:00.296  18286-18286/comepqtesting.wix.socot.epqtesting E/AndroidRuntime﹕ FATAL EXCEPTION: main
     Process: comepqtesting.wix.socot.epqtesting, PID: 18286
@@ -30,6 +32,23 @@ This is the logcat error I get when I press button to navigate to 'activity_time
             at java.lang.reflect.Method.invoke(Native Method)
             at com.android.internal.os.ZygoteInit$MethodAndArgsCaller.run(ZygoteInit.java:726)
             at com.android.internal.os.ZygoteInit.main(ZygoteInit.java:616)
+
+
+
+Here is the LogCat when attempting to add a new 'Revision Task' in 'activity_revision.xml'
+
+04-05 23:16:50.573    5395-5409/comepqtesting.wix.socot.epqtesting E/Surface﹕ getSlotFromBufferLocked: unknown buffer: 0xaaad2490
+04-05 23:16:52.533    5395-5395/comepqtesting.wix.socot.epqtesting E/AndroidRuntime﹕ FATAL EXCEPTION: main
+    Process: comepqtesting.wix.socot.epqtesting, PID: 5395
+    java.lang.NullPointerException: Attempt to invoke virtual method 'android.text.Editable android.widget.EditText.getText()' on a null object reference
+            at comepqtesting.wix.socot.epqtesting.Revision$1.onClick(Revision.java:58)
+            at android.view.View.performClick(View.java:5198)
+            at android.view.View$PerformClick.run(View.java:21147)
+            at android.os.Handler.handleCallback(Handler.java:739)
+            at android.os.Handler.dispatchMessage(Handler.java:95)
+            at android.os.Looper.loop(Looper.java:148)
+            at android.app.ActivityThread.main(ActivityThread.java:5417)
+            at java.lang.reflect.Method.invoke(Native Method)
 
 
 
