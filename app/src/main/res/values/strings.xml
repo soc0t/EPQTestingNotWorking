@@ -10,4 +10,6 @@
     <string name="title_activity_alarm_clock">AlarmClock</string>
     <string name="title_activity_homework">Homework</string>
     <string name="title_activity_calculator">Calculator</string>
+    <string name="title_activity_timetable">Timetable</string>
+    <string name="title_activity_revision">Revision</string>
 </resources>
